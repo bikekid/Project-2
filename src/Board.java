@@ -29,6 +29,5 @@ public class Board {
     }
     //Main for testing
     public static void main(String[] args) {
-        Board a = new Board();
     }
 }
