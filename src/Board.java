@@ -3,7 +3,8 @@ import java.util.Scanner;
 //Board class to create an instance of a game board
 public class Board {
     //board array
-    private int[][] spaces;
+    public static int[][] spaces;
+    public static String playerInput;
     //constructor to intialize board
 
     public Board() {
@@ -21,11 +22,17 @@ public class Board {
         }
         //creates a standard board
         if (playerInput.equals("standard")) {
-            this.spaces = new int[8][8];
+            spaces = new int[8][8];
         } else {
             //expert board is created
-            this.spaces = new int[12][12];
+            spaces = new int[12][12];
         }
+    }
+    public static int[][] getBoard(){
+        return spaces;
+    }
+    public static String getChoice(){
+        return playerInput;
     }
     //Main for testing
     public static void main(String[] args) {
