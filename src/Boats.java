@@ -63,8 +63,8 @@ public class Boats {
         }
     }
     public boolean generatedSpot(int shipSize){
-        int x = (int) (Math.random() * shipClone.length);
-        int y = (int) (Math.random() * shipClone.length);
+        int x = (int) (Math.random() * shipClone.length - 1);
+        int y = (int) (Math.random() * shipClone.length - 1);
 
         if(initalSpaceCheck(x, y) == true) {
 
@@ -82,14 +82,15 @@ public class Boats {
             int countSouth = 0;
 
             if (westLoc + eastLoc >= shipSize || northLoc + southLoc >= shipSize) {
-                int randOption = (int) (Math.random() * 2);
+                shipClone[x][y] = shipSize;
+                int randOption = (int) (Math.random() * 2 + 1);
                 //if 1 vertical
                 //if 2 horizontal
 
                 //with randOption 1
-                if (randOption == 1 && westLoc +eastLoc >= shipSize) {
-                    while (countHorizontal < shipSize-1) {
-                        int randSpot = (int) (Math.random() * 2);
+                if (westLoc +eastLoc >= shipSize) {
+                    while (countHorizontal < shipSize) {
+                        int randSpot = (int) (Math.random() * 2 +1);
                         if(randSpot == 1 && countWest < westLoc){
                             countWest += 1;
                             countHorizontal += 1;
@@ -105,11 +106,11 @@ public class Boats {
                     return true;
                 }else{
                     while (countVertical < shipSize-1) {
-                        int randSpot = (int) (Math.random() * 2);
+                        int randSpot = (int) (Math.random() * 2 +1);
                         if(randSpot == 1 && countNorth < northLoc){
                             countNorth += 1;
                             countVertical += 1;
-                            shipClone[y+ countNorth][x] = shipSize;
+                            shipClone[y+countNorth][x] = shipSize;
                         }else if(randSpot == 2 && countSouth < southLoc){
                             countSouth += 1;
                             countVertical += 1;
@@ -190,9 +191,9 @@ public class Boats {
         System.out.println(y.toString(y.shipArr));
         System.out.println(y.westBranch(0,3,3,4));
         System.out.println(y.southBranch(0,2,3,4));
-        System.out.println((int) (Math.random() * y.shipClone.length));
         int[][] x = y.shipGenerated();
         System.out.println(y.toString(x));
+
     }
 }
 
