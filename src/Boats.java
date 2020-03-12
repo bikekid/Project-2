@@ -68,10 +68,10 @@ public class Boats {
 
         if(initalSpaceCheck(x, y) == true) {
 
-            westLoc = westBranch(0,shipSize, x-1, y);
-            eastLoc = eastBranch(0,shipSize, x+1, y);
-            northLoc = northBranch(0,shipSize, x, y+1);
-            southLoc = southBranch(0, shipSize, x, y-1);
+            westLoc = westBranch(0,shipSize-1, x-1, y);
+            eastLoc = eastBranch(0,shipSize-1, x+1, y);
+            northLoc = northBranch(0,shipSize-1, x, y+1);
+            southLoc = southBranch(0, shipSize-1, x, y-1);
 
             int countHorizontal = 0;
             int countWest = 0;
@@ -82,14 +82,14 @@ public class Boats {
             int countSouth = 0;
 
             if (westLoc + eastLoc >= shipSize || northLoc + southLoc >= shipSize) {
-                shipClone[x][y] = shipSize;
+                shipClone[y][x] = shipSize;
                 int randOption = (int) (Math.random() * 2 + 1);
                 //if 1 vertical
                 //if 2 horizontal
 
                 //with randOption 1
-                if (westLoc +eastLoc >= shipSize) {
-                    while (countHorizontal < shipSize) {
+                if (westLoc+eastLoc >= shipSize) {
+                    while (countHorizontal < shipSize-1) {
                         int randSpot = (int) (Math.random() * 2 +1);
                         if(randSpot == 1 && countWest < westLoc){
                             countWest += 1;
@@ -104,7 +104,7 @@ public class Boats {
                         }
                     }
                     return true;
-                }else{
+                }else if (northLoc + southLoc >= shipSize-1){
                     while (countVertical < shipSize-1) {
                         int randSpot = (int) (Math.random() * 2 +1);
                         if(randSpot == 1 && countNorth < northLoc){
@@ -120,6 +120,8 @@ public class Boats {
                         }
                     }
                     return true;
+                } else{
+
                 }
             }
         }
@@ -185,6 +187,15 @@ public class Boats {
             column += row + "\n";
         }
         return column;
+    }
+
+    public boolean hit(int x, int y){
+        if (shipClone[x][y] == 0){
+            return false;
+        }else{
+            shipClone[x][y] = 9;
+            return true;
+        }
     }
     public static void main(String[] args) {
         Boats y = new Boats();
