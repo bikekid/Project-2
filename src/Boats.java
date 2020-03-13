@@ -1,4 +1,5 @@
 
+import java.util.Scanner;// DELETE LATER!!!
 
 public class Boats {
     private int[][] shipArr;
@@ -12,29 +13,43 @@ public class Boats {
     private int lowerBound;
     private int upperBound;
 
+    //constructor for class
     public Boats() {
-        shipArr = new int[10][10];//Board.getBoard();//FILL IN FOR BOARD
-        shipClone = new int[10][10];
+
+        //takes in the board array and makes a clone for the board
+        shipArr = new int[8][8];
+        shipClone = new int[8][8]; // will fix in final version
         upperBound = shipClone.length;
         lowerBound = 0;
 
-        for (int i = 0; i < shipArr.length; i++) {
+        for (int i = 0; i < shipArr.length; i++) {//populates array with 0's to start (these are blank spaces)
             for (int j = 0; j < shipArr[0].length; j++) {
                 shipArr[i][j] = 0;
             }
         }
         this.playstyle = "standard"; //Board.getChoice(); FILL IN FOR BOARD CLASS
     }
-
+    // generates a board populated with numbers representing ships
     public int[][] shipGenerated() {
+        // this is for standard playstyle
         if (playstyle.equals("standard")) {
-            for (int i = 2; i <= 5; i++) {
+            for (int i = 1; i <= 5; i++) {
                 boolean generated = false;
+                if (i == 1) {
+                    shipSize = 2;
+                } else if (i == 2 || i == 3) {
+                    shipSize = 3;
+                } else if (i == 5) {
+                    shipSize = 4;
+                } else {
+                    shipSize = 5;
+                }
                 while (generated == false) {
-                    generated = generatedSpot(i);
+                    generated = generatedSpot(shipSize);
                 }
             }
             return shipClone;
+            // this is for expert playstyle
         } else {
             for (int i = 1; i <= 10; i ++) {
                 boolean generated = false;
@@ -52,9 +67,10 @@ public class Boats {
 
                 }
             }
-            return shipClone;
         }
+        return shipClone;
     }
+    // this makes sure the space that was where the ship is going to be generated is empty
     public boolean initalSpaceCheck(int x, int y){
         if (shipClone[y][x] == 0){
             return true;
@@ -62,17 +78,21 @@ public class Boats {
             return false;
         }
     }
-    public boolean generatedSpot(int shipSize){
+    // this generates a ship
+    public boolean generatedSpot(int shipSize) {
+        // two random coordinates on the board
         int x = (int) (Math.random() * shipClone.length - 1);
         int y = (int) (Math.random() * shipClone.length - 1);
 
-        if(initalSpaceCheck(x, y) == true) {
+        //if we know that the space is available then we can proceed
+        if (initalSpaceCheck(x, y) == true) {
+            // we look to see how many spaces we have available on each side north, south, east, and west of our current spot
+            westLoc = westBranch(0, shipSize - 1, x - 1, y);
+            eastLoc = eastBranch(0, shipSize - 1, x + 1, y);
+            northLoc = northBranch(0, shipSize - 1, x, y + 1);
+            southLoc = southBranch(0, shipSize - 1, x, y - 1);
 
-            westLoc = westBranch(0,shipSize-1, x-1, y);
-            eastLoc = eastBranch(0,shipSize-1, x+1, y);
-            northLoc = northBranch(0,shipSize-1, x, y+1);
-            southLoc = southBranch(0, shipSize-1, x, y-1);
-
+            // these are counters so when we add spaces we can increment
             int countHorizontal = 0;
             int countWest = 0;
             int countEast = 0;
@@ -81,62 +101,97 @@ public class Boats {
             int countNorth = 0;
             int countSouth = 0;
 
-            if (westLoc + eastLoc >= shipSize || northLoc + southLoc >= shipSize) {
+            // if both spots are available then we can do either
+            if (westLoc + eastLoc >= shipSize && northLoc + southLoc >= shipSize) {
                 shipClone[y][x] = shipSize;
                 int randOption = (int) (Math.random() * 2 + 1);
                 //if 1 vertical
                 //if 2 horizontal
 
-                //with randOption 1
-                if (westLoc+eastLoc >= shipSize) {
-                    while (countHorizontal < shipSize-1) {
-                        int randSpot = (int) (Math.random() * 2 +1);
-                        if(randSpot == 1 && countWest < westLoc){
+                //with randOption we chose to do the west - east side
+                if (randOption == 1) {//say if randOption ==1
+                    while (countHorizontal < shipSize - 1) {
+                        // while loop because we don't know how far we need to go on each side
+                        int randSpot = (int) (Math.random() * 2 + 1);
+                        if (randSpot == 1 && countWest < westLoc) {
                             countWest += 1;
                             countHorizontal += 1;
-                            shipClone[y][x-countWest] = shipSize;
-                        }else if(randSpot == 2 && countEast < eastLoc){
+                            shipClone[y][x - countWest] = shipSize;
+                        } if (randSpot == 2 && countEast < eastLoc) {
                             countEast += 1;
                             countHorizontal += 1;
                             shipClone[y][countEast + x] = shipSize;
-                        }else{
-                            return false;
                         }
                     }
                     return true;
-                }else if (northLoc + southLoc >= shipSize-1){
-                    while (countVertical < shipSize-1) {
-                        int randSpot = (int) (Math.random() * 2 +1);
-                        if(randSpot == 1 && countNorth < northLoc){
+                } else if (randOption == 2) {//if randOption = 2, we do north - south side
+                    shipClone[y][x] = shipSize;
+                    while (countVertical < shipSize - 1) {
+                        int randSpot = (int) (Math.random() * 2 + 1);
+                        if (randSpot == 1 && countNorth < northLoc) {
                             countNorth += 1;
                             countVertical += 1;
-                            shipClone[y+countNorth][x] = shipSize;
-                        }else if(randSpot == 2 && countSouth < southLoc){
+                            shipClone[y + countNorth][x] = shipSize;
+                        }if (randSpot == 2 && countSouth < southLoc) {
                             countSouth += 1;
                             countVertical += 1;
-                            shipClone[y-countSouth][x] = shipSize;
-                        }else{
-                            return false;
+                            shipClone[y - countSouth][x] = shipSize;
                         }
                     }
-                    return true;
-                } else{
+                    return true; // we return true bc we know either side works
 
+                }// else if only west - east works we try that
+            } else if (westLoc + eastLoc >= shipSize) {
+                shipClone[y][x] = shipSize;
+                while (countHorizontal < shipSize - 1) {
+                    int randSpot = (int) (Math.random() * 2 + 1);
+                    if (randSpot == 1 && countWest < westLoc) {
+                        countWest += 1;
+                        countHorizontal += 1;
+                        shipClone[y][x - countWest] = shipSize;
+                    } if (randSpot == 2 && countEast < eastLoc) {
+                        countEast += 1;
+                        countHorizontal += 1;
+                        shipClone[y][countEast + x] = shipSize;
+                    }
                 }
+                return true;
+            }// if west - east is not going to work, we do north and south
+            else if (northLoc + southLoc >= shipSize){
+                shipClone[y][x] = shipSize;
+                while (countVertical < shipSize - 1) {
+                    int rand = (int) (Math.random() * 2 + 1);
+                    if (rand == 1 && countNorth < northLoc) {
+                        countNorth += 1;
+                        countVertical += 1;
+                        shipClone[y + countNorth][x] = shipSize;
+                    } if (rand == 2 && countSouth < southLoc) {
+                        countSouth += 1;
+                        countVertical += 1;
+                        shipClone[y - countSouth][x] = shipSize;
+                    }
+                }
+                return true;
+            } else{
+                return false;
             }
         }
+        // if no options work, we return false and look for the next spot
         return false;
     }
-
+    // these are recursive functions that determine how many spaces to each side there are open. Each of them are identical
+    //but go in different directions
     public int westBranch (int count, int sizeofShip, int x, int y){
-        if(x <= lowerBound || x >= upperBound) {
+        if(x <= lowerBound/*minimum that the board can go*/ || x >= upperBound /* max board can go */) {
             return count;
+            //if the spot is taken return how far the board was able to go
         }else if (shipClone[y][x] != 0){
             return count;
+            //if you run out of spots forward, return the total count
         } else if (sizeofShip == 0){
             return count;
         }else{
-            count += 1;
+            count += 1;//if the spot was open, move forward and increment count
             return westBranch(count ,sizeofShip-1, x-1, y);
         }
     }
@@ -188,12 +243,12 @@ public class Boats {
         }
         return column;
     }
-
+    // this method is used for hitting ships. If a ship gets hit, it turns the space into a 9 and returns true, if there is nothing there, returns false
     public boolean hit(int x, int y){
-        if (shipClone[x][y] == 0){
+        if (shipClone[y][x] == 0){
             return false;
         }else{
-            shipClone[x][y] = 9;
+            shipClone[y][x] = 9;
             return true;
         }
     }
@@ -204,125 +259,23 @@ public class Boats {
         System.out.println(y.southBranch(0,2,3,4));
         int[][] x = y.shipGenerated();
         System.out.println(y.toString(x));
+        y.hit(3,4);
+
+        Scanner s = new Scanner(System.in);
+        int i = 0;
+        while(i < 4){
+            System.out.print("spot to hit");
+            String a = s.nextLine();
+            String b = s.nextLine();
+            int u = Integer.parseInt(b);
+            int w = Integer.parseInt(a);
+
+            boolean effect = y.hit(u,w);
+            System.out.println(effect);
+
+            i += 1;
+        }
+        System.out.println(y.toString(x));
 
     }
 }
-
-
-
-
-//    public boolean generatedSpot(int sizeofShip){
-//        double genCol = Math.random() * shipArr.length;
-//        double genRow = Math.random() * shipArr.length;
-//        int x = (int) Math.floor(genCol);
-//        int y = (int) Math.floor(genRow);
-//        if (shipArr[x][y] == 0) {
-//            shipArr[x][y] = sizeofShip;
-//            //West side
-//            if (spotFinder(sizeofShip, x, y) == 1) {
-//                for (int a = y; a < sizeofShip; a--) {
-//                    shipArr[x][a] = sizeofShip;
-//                }
-//                    return true;
-//            } else if (spotFinder(sizeofShip, x, y) == 2) {
-//                for (int b = y; b < sizeofShip; b++) {
-//                    shipArr[x][b] = sizeofShip;
-//                }
-//                    return true;
-//            } else if (spotFinder(sizeofShip, x, y) == 3) {
-//                for (int c = y - this.westLoc; c < y + this.eastLoc; c++) {
-//                    shipArr[x][c] = sizeofShip;
-//                }
-//                    return true;
-//            }
-//            else if (spotFinder(sizeofShip,x,y) == 4){
-//                // need to find a way to add the two if they are not gonna add up nicely
-//                    int choice = (int) Math.random() * 2;
-//                    if (choice == 1) {
-//                        for(int i = y - this.westLoc; i < this.westLoc; i ++){
-//                            shipArr[x][i] = sizeofShip;
-//                        }
-//                        for(int j = y; j <= sizeofShip - this.eastLoc; j ++){
-//                            shipArr[x][y + j] = sizeofShip;
-//                        }
-//                    } else{
-//                        for(int i = y - this.eastLoc; i < this.eastLoc; i ++){
-//                            shipArr[x][i] = sizeofShip;
-//                        }
-//                        for(int j = y; j <= sizeofShip - this.westLoc; j ++){
-//                            shipArr[x][y + j] = sizeofShip;
-//                        }
-//                        return true;
-//                    }
-//                }
-//            if (spotFinder(sizeofShip, x, y) == 5) {
-//                for (int a = x; a < sizeofShip; a--) {
-//                    shipArr[a][y] = sizeofShip;
-//                }
-//                return true;
-//            } else if (this.spotFinder(sizeofShip, x, y) == 6) {
-//                for (int b = x; b < sizeofShip; b++) {
-//                    shipArr[b][y] = sizeofShip;
-//                }
-//                return true;
-//            } else if (this.spotFinder(sizeofShip, x, y) == 7) {
-//                for (int c = x - this.northLoc; c < x + this.southLoc; c++) {
-//                    shipArr[c][y] = sizeofShip;
-//                }
-//                return true;
-//            }
-//            else if (this.spotFinder(sizeofShip,x,y) == 8) {
-//                // need to find a way to add the two if they are not gonna add up nicely
-//                int choice = (int) Math.random() * 2;
-//                if (choice == 1) {
-//                    for (int i = y - this.northLoc; i < this.southLoc; i++) {
-//                        shipArr[i][y] = sizeofShip;
-//                    }
-//                    for (int j = y; j <= (sizeofShip - this.eastLoc); j++){
-//                        shipArr[j][y] = sizeofShip;
-//                    }
-//                } else {
-//                    for (int i = x - this.eastLoc; i < this.eastLoc; i++) {
-//                        shipArr[i][y] = sizeofShip;
-//                    }
-//                    for (int j = x; j <= (sizeofShip - this.westLoc); j++){
-//                        shipArr[j][y] = sizeofShip;
-//                    }
-//                }
-//            }
-//        }
-//        return fa
-//    public int spotFinder(int sizeOfShip, int x, int y){
-//        int shipOptions = sizeOfShip - 1;
-//        this.westLoc = westBranch(shipOptions, x, y);
-//        this.eastLoc = eastBranch(shipOptions, x, y);
-//        this.northLoc = northBranch(shipOptions, x, y);
-//        this.southLoc = southBranch(shipOptions, x, y);
-//
-//        if(westLoc == shipOptions){
-//            return 1;
-//            }
-//        else if(eastLoc == shipOptions){
-//            return 2;
-//        }
-//        else if (eastLoc + westLoc == shipOptions){
-//            return 3;
-//        }
-//        else if (eastLoc + westLoc >= shipOptions){
-//            return 4;
-//        }
-//        if(northLoc == shipOptions){
-//            return 5;
-//        }
-//        else if(southLoc == shipOptions){
-//            return 6;
-//        }
-//        else if (southLoc + northLoc == shipOptions){
-//            return 7;
-//        }
-//        else if (southLoc + northLoc >= shipOptions){
-//            return 8;
-//        }
-//        return -1;
-//    }
-
