@@ -3,35 +3,45 @@ import java.util.Scanner;
 //Board class to create an instance of a game board
 public class Board {
     //board array
-    public static int[][] spaces;
-    public static String playerInput;
+    private static int[][] spaces;
+    private static int playerInput;
     //constructor to intialize board
 
     public Board() {
         //creating a scanner class to allow for user input
         Scanner input = new Scanner(System.in);
-        System.out.print("Enter a play style: Standard or Expert");
+        System.out.print("Enter a play style: Standard:1 or Expert:2");
         String choice = input.nextLine();
-        String playerInput = choice.toLowerCase();
-
+        if (!(choice.equals("1") || choice.equals("2"))){
+            playerInput = 0;
+        }else{
+            playerInput = Integer.parseInt(choice);
+        }
         //while loop ensures that the user either puts in standard or expert
-        while (!(playerInput.equals("standard") || playerInput.equals("expert"))) {
-            System.out.println("Select playstyle");
+        while (!(playerInput == 1 || playerInput== 2)) {
+            System.out.println("Invalid answer select playstyle (standard:1 expert:2)");
             choice = input.nextLine();
-            playerInput = choice.toLowerCase();
+            if (!(choice.equals("1") || choice.equals("2"))){
+                playerInput = 0;
+            }else{
+                playerInput = Integer.parseInt(choice);
+            }
         }
         //creates a standard board
-        if (playerInput.equals("standard")) {
+        if (playerInput == 1) {
+            System.out.println("Standard mode chosen!");
             spaces = new int[8][8];
         } else {
             //expert board is created
+            System.out.println("Expert mode chosen!");
             spaces = new int[12][12];
         }
     }
-    public static int[][] getBoard(){
+    public static int[][] getBoard()
+    {
         return spaces;
     }
-    public static String getChoice(){
+    public static int getChoice(){
         return playerInput;
     }
     //Main for testing

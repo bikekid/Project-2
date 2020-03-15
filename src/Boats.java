@@ -1,24 +1,23 @@
 
-import java.util.Scanner;// DELETE LATER!!!
-
 public class Boats {
     private int[][] shipArr;
     private int westLoc;
     private int eastLoc;
     private int northLoc;
     private int southLoc;
-    private String playstyle;
+    private int playstyle;
     private int shipSize;
     private int[][] shipClone;
     private int lowerBound;
     private int upperBound;
 
     //constructor for class
-    public Boats() {
+    public Boats(Board input) {
 
         //takes in the board array and makes a clone for the board
-        shipArr = new int[8][8];
-        shipClone = new int[8][8]; // will fix in final version
+        int[][] specs = input.getBoard();
+        shipArr = new int[specs.length][specs[0].length];
+        shipClone = new int[specs.length][specs[0].length];
         upperBound = shipClone.length;
         lowerBound = 0;
 
@@ -27,12 +26,15 @@ public class Boats {
                 shipArr[i][j] = 0;
             }
         }
-        this.playstyle = "standard"; //Board.getChoice(); FILL IN FOR BOARD CLASS
+        playstyle = input.getChoice();
+        shipClone = this.shipsGenerated();
+        String boardToString = this.toString(shipClone);// will not need these 2 lines for testing.
+        System.out.print(boardToString);// for testing
     }
     // generates a board populated with numbers representing ships
-    public int[][] shipGenerated() {
+    public int[][] shipsGenerated() {
         // this is for standard playstyle
-        if (playstyle.equals("standard")) {
+        if (playstyle == 1) {
             for (int i = 1; i <= 5; i++) {
                 boolean generated = false;
                 if (i == 1) {
@@ -124,7 +126,7 @@ public class Boats {
                         }
                     }
                     return true;
-                } else if (randOption == 2) {//if randOption = 2, we do north - south side
+                } else {//if randOption = 2, we do north - south side
                     shipClone[y][x] = shipSize;
                     while (countVertical < shipSize - 1) {
                         int randSpot = (int) (Math.random() * 2 + 1);
@@ -253,29 +255,6 @@ public class Boats {
         }
     }
     public static void main(String[] args) {
-        Boats y = new Boats();
-        System.out.println(y.toString(y.shipArr));
-        System.out.println(y.westBranch(0,3,3,4));
-        System.out.println(y.southBranch(0,2,3,4));
-        int[][] x = y.shipGenerated();
-        System.out.println(y.toString(x));
-        y.hit(3,4);
-
-        Scanner s = new Scanner(System.in);
-        int i = 0;
-        while(i < 4){
-            System.out.print("spot to hit");
-            String a = s.nextLine();
-            String b = s.nextLine();
-            int u = Integer.parseInt(b);
-            int w = Integer.parseInt(a);
-
-            boolean effect = y.hit(u,w);
-            System.out.println(effect);
-
-            i += 1;
-        }
-        System.out.println(y.toString(x));
 
     }
 }
