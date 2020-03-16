@@ -255,6 +255,16 @@ public class Boats {
             return true;
         }
     }
+    public int[][] getShipClone(){
+        return shipClone;
+    }
+    public int getLowerBound(){
+        return lowerBound;
+    }
+    public int getUpperBound(){
+        return upperBound;
+    }
+
     public static void main(String[] args) {
     }
 }
