@@ -251,7 +251,8 @@ public class Boats {
         if (shipClone[y][x] == 0){
             return false;
         }else{
-            shipClone[y][x] = 9;
+            int shipHit = shipClone[y][x];
+            shipClone[y][x] = (shipHit * -1);
             return true;
         }
     }
