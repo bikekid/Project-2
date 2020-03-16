@@ -1,54 +1,50 @@
 
 public class Boats {
-    private int[][] shipArr;
-    private int westLoc;
-    private int eastLoc;
+
+    private int[][] shipArr;//ship array
+    private int westLoc;//west location of spaces from starting point
+    private int eastLoc;//same thing for other cardnial directions
     private int northLoc;
     private int southLoc;
-    private int playstyle;
-    private int shipSize;
-    private int[][] shipClone;
-    private int lowerBound;
-    private int upperBound;
+    private int playstyle;//takes input from the board class and
+    private int shipSize;//each individual ship size is passed in
+    private int[][] shipClone;//ship array made to mimic
+    private int lowerBound;//need to know borders for the array
+    private int upperBound;// need to know borders for array
+    private int shipCounter = 1;// incrementer to set each ship apart.
 
-    //constructor for class
-    public Boats(Board input) {
+    //constructor for board lass
+    public Boats(Board b) {
 
-        //takes in the board array and makes a clone for the board
-        int[][] specs = input.getBoard();
-        shipArr = new int[specs.length][specs[0].length];
-        shipClone = new int[specs.length][specs[0].length];
+        shipClone = b.getBoard();//points to the memory address for the board made.
         upperBound = shipClone.length;
         lowerBound = 0;
-
-        for (int i = 0; i < shipArr.length; i++) {//populates array with 0's to start (these are blank spaces)
-            for (int j = 0; j < shipArr[0].length; j++) {
-                shipArr[i][j] = 0;
-            }
-        }
-        playstyle = input.getChoice();
+        playstyle = b.getChoice();
         shipClone = this.shipsGenerated();
         String boardToString = this.toString(shipClone);// will not need these 2 lines for testing.
         System.out.print(boardToString);// for testing
     }
     // generates a board populated with numbers representing ships
+    // this is all inverted because it is easier within the turns class.
     public int[][] shipsGenerated() {
         // this is for standard playstyle
         if (playstyle == 1) {
             for (int i = 1; i <= 5; i++) {
                 boolean generated = false;
                 if (i == 1) {
-                    shipSize = 2;
-                } else if (i == 2 || i == 3) {
-                    shipSize = 3;
-                } else if (i == 5) {
-                    shipSize = 4;
-                } else {
                     shipSize = 5;
+                } else if (i == 2) {
+                    shipSize = 4;
+                } else if (i == 3 || i == 4) {
+                    shipSize = 3;
+                } else {
+                    shipSize = 2;
                 }
                 while (generated == false) {
                     generated = generatedSpot(shipSize);
                 }
+                //this is an incrementer. It is useful for the turns class because it makes sure each ship is unique
+                shipCounter += 1;
             }
             return shipClone;
             // this is for expert playstyle
@@ -68,6 +64,7 @@ public class Boats {
                     generated = generatedSpot(shipSize);
 
                 }
+                shipCounter += 1;
             }
         }
         return shipClone;
@@ -83,8 +80,8 @@ public class Boats {
     // this generates a ship
     public boolean generatedSpot(int shipSize) {
         // two random coordinates on the board
-        int x = (int) (Math.random() * shipClone.length - 1);
-        int y = (int) (Math.random() * shipClone.length - 1);
+        int x = (int) (Math.random() * shipClone.length);
+        int y = (int) (Math.random() * shipClone[0].length);
 
         //if we know that the space is available then we can proceed
         if (initalSpaceCheck(x, y) == true) {
@@ -105,7 +102,7 @@ public class Boats {
 
             // if both spots are available then we can do either
             if (westLoc + eastLoc >= shipSize && northLoc + southLoc >= shipSize) {
-                shipClone[y][x] = shipSize;
+                shipClone[y][x] = shipCounter;
                 int randOption = (int) (Math.random() * 2 + 1);
                 //if 1 vertical
                 //if 2 horizontal
@@ -118,67 +115,71 @@ public class Boats {
                         if (randSpot == 1 && countWest < westLoc) {
                             countWest += 1;
                             countHorizontal += 1;
-                            shipClone[y][x - countWest] = shipSize;
-                        } if (randSpot == 2 && countEast < eastLoc) {
+                            shipClone[y][x - countWest] = shipCounter;
+                        }
+                        if (randSpot == 2 && countEast < eastLoc) {
                             countEast += 1;
                             countHorizontal += 1;
-                            shipClone[y][countEast + x] = shipSize;
+                            shipClone[y][countEast + x] = shipCounter;
                         }
                     }
                     return true;
                 } else {//if randOption = 2, we do north - south side
-                    shipClone[y][x] = shipSize;
+                    shipClone[y][x] = shipCounter;
                     while (countVertical < shipSize - 1) {
                         int randSpot = (int) (Math.random() * 2 + 1);
                         if (randSpot == 1 && countNorth < northLoc) {
                             countNorth += 1;
                             countVertical += 1;
-                            shipClone[y + countNorth][x] = shipSize;
-                        }if (randSpot == 2 && countSouth < southLoc) {
+                            shipClone[y + countNorth][x] = shipCounter;
+                        }
+                        if (randSpot == 2 && countSouth < southLoc) {
                             countSouth += 1;
                             countVertical += 1;
-                            shipClone[y - countSouth][x] = shipSize;
+                            shipClone[y - countSouth][x] = shipCounter;
                         }
                     }
                     return true; // we return true bc we know either side works
 
                 }// else if only west - east works we try that
             } else if (westLoc + eastLoc >= shipSize) {
-                shipClone[y][x] = shipSize;
+                shipClone[y][x] = shipCounter;
                 while (countHorizontal < shipSize - 1) {
                     int randSpot = (int) (Math.random() * 2 + 1);
                     if (randSpot == 1 && countWest < westLoc) {
                         countWest += 1;
                         countHorizontal += 1;
-                        shipClone[y][x - countWest] = shipSize;
-                    } if (randSpot == 2 && countEast < eastLoc) {
+                        shipClone[y][x - countWest] = shipCounter;
+                    }
+                    if (randSpot == 2 && countEast < eastLoc) {
                         countEast += 1;
                         countHorizontal += 1;
-                        shipClone[y][countEast + x] = shipSize;
+                        shipClone[y][countEast + x] = shipCounter;
                     }
                 }
                 return true;
             }// if west - east is not going to work, we do north and south
-            else if (northLoc + southLoc >= shipSize){
-                shipClone[y][x] = shipSize;
+            else if (northLoc + southLoc >= shipSize) {
+                shipClone[y][x] = shipCounter;
                 while (countVertical < shipSize - 1) {
                     int rand = (int) (Math.random() * 2 + 1);
                     if (rand == 1 && countNorth < northLoc) {
                         countNorth += 1;
                         countVertical += 1;
-                        shipClone[y + countNorth][x] = shipSize;
-                    } if (rand == 2 && countSouth < southLoc) {
+                        shipClone[y + countNorth][x] = shipCounter;
+                    }
+                    if (rand == 2 && countSouth < southLoc) {
                         countSouth += 1;
                         countVertical += 1;
-                        shipClone[y - countSouth][x] = shipSize;
+                        shipClone[y - countSouth][x] = shipCounter;
                     }
                 }
                 return true;
-            } else{
-                return false;
             }
+        } else {
+            // if no options work, we return false and look for the next spot
+            return false;
         }
-        // if no options work, we return false and look for the next spot
         return false;
     }
     // these are recursive functions that determine how many spaces to each side there are open. Each of them are identical
@@ -255,6 +256,5 @@ public class Boats {
         }
     }
     public static void main(String[] args) {
-
     }
 }
