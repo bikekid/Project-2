@@ -265,6 +265,10 @@ public class Boats {
     public int getUpperBound(){
         return upperBound;
     }
+    public String shipPrinted(){
+        String x = toString(shipClone);
+        return x;
+    }
 
     public static void main(String[] args) {
     }
