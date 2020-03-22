@@ -65,7 +65,7 @@ public class Turns1 {
         Scanner userInput = new Scanner(System.in);
         if (playStyle == 1){
             while(shipSunk < 5){
-                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missle, or enter 4 to print board");
+                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missile, or enter 4 to print board");
                 String choice = userInput.nextLine();
                 if (choice.equals("1")){
                     System.out.println("Select x coordinate");
@@ -88,6 +88,8 @@ public class Turns1 {
 
                 }else if(choice.equals("3")){
                     this.missle();
+                }else {
+                    System.out.println(u.shipPrinted());
                 }
 
             }
@@ -275,7 +277,6 @@ public class Turns1 {
             String xCoord = missinInp.nextLine();
             System.out.println("What y coordinate would you like to strike?");
             String yCoord = missinInp.nextLine();
-
             int x = 0;
             int y = 0;
             try {
@@ -287,10 +288,12 @@ public class Turns1 {
             }
         }
         int[][] strikeZone = new int[3][3];
-        for(int i = -1; i<= 1; i ++){
-            for(int j = -1; j<= 1; j++){
+        for(int i = 0; i<= 3; i ++){
+            for(int j = 0; j<= 3; j++){
+                int newValue = shipClone[i][j] * -1;
+                shipClone[i][j] = newValue;
                 String outcome = this.hitForMissle(x+i, y+1);
-                }
+            }
         }
         System.out.println("Missile fired!");
     }
