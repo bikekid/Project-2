@@ -1,12 +1,15 @@
 import java.util.Scanner;
 public class Turns1 {
     private int[][] shipClone;
+    private int[][] coordinateTracker;
     private int x;
     private int y;
     private int turn;
-    private int upperBound;
-    private int lowerBound;
-    private int shipHit;
+    private int upperBound;//upper bound of board array
+    private int lowerBound;//lower bound of board array
+    private int shipHit;//tracks how many ships have been hit
+
+    //these counters and ship ints are for the playstyles. They are basically how we keep track of the ships and how many are left
     private int counter1 = 0;
     private int counter2 = 0;
     private int counter3 = 0;
@@ -27,8 +30,13 @@ public class Turns1 {
     private int ship8;
     private int ship9;
     private int ship10;
-    private int playStyle;
-    private int shipSunk;
+    private int playStyle;//determines what game style the player chose: standard or expert
+    private int shipSunk;// counts all the ships sunk
+    private int missileCounter = 0;//counts how many missiles have been fired
+    private int missileLimit;// how many missiles can be used based on playstyle
+    private int droneCounter = 0;//same functions as above
+    private int droneLimit;//same
+
     //Create global private linked list
 
     //private Board board = new Board();
@@ -37,14 +45,18 @@ public class Turns1 {
     private int tracker;
 
     public Turns1(Board play, Boats u) {
-        playStyle = play.getChoice();
-        shipClone = u.getShipClone();
-        if (playStyle == 1) {
+
+        playStyle = play.getChoice();//gets the playstyle from board
+        shipClone = u.getShipClone();//gets the ship array from boats
+        if (playStyle == 1) {//for standard mode
             ship1 = 5;
             ship2 = 4;
             ship3 = 3;
             ship4 = 3;
             ship5 = 2;
+            missileLimit = 1;
+            droneLimit = 1;
+            coordinateTracker = new int[8][8];
         } else {
             ship1 = 5;
             ship2 = 5;
@@ -56,6 +68,9 @@ public class Turns1 {
             ship8 = 3;
             ship9 = 2;
             ship10 = 2;
+            missileLimit = 2;
+            droneLimit = 2;
+            coordinateTracker = new int[12][12];
         }
         turn = 0;
         shipSunk = 0;
@@ -63,11 +78,13 @@ public class Turns1 {
         lowerBound = u.getLowerBound();
 
         Scanner userInput = new Scanner(System.in);
-        if (playStyle == 1){
-            while(shipSunk < 5){
-                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missile, or enter 4 to print board");
+
+        if (playStyle == 1) {//if standard
+            while (shipSunk < 5) {
+                // while all the ships are not sunk this thread executes
+                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missle, or enter 4 to print board");
                 String choice = userInput.nextLine();
-                if (choice.equals("1")){
+                if (choice.equals("1")) {
                     System.out.println("Select x coordinate");
                     String xCoord = userInput.nextLine();
 
@@ -76,29 +93,37 @@ public class Turns1 {
 
                     int x = 0;
                     int y = 0;
-                    try{
+                    try {
                         x = Integer.parseInt(xCoord);
                         y = Integer.parseInt(yCoord);
-                        System.out.println(this.hit(x,y));
-                    }catch (Exception NumberFormatException){
+                        System.out.println(this.hit(x, y));
+                    } catch (NumberFormatException NFE) {
                         System.out.println("Wrong input try again");
                     }
-                }else if(choice.equals("2")){
-                    this.drone();
+                } else if (choice.equals("2")) {
+                    int result = this.drone();
+                    if (result != -1) {
+                        System.out.println(result + " spots with ships were found");
+                    } else {
+                        System.out.println("You have used all your drones you cannot use one at this time");
+                    }
 
-                }else if(choice.equals("3")){
+
+                } else if (choice.equals("3")) {
                     this.missle();
-                }else {
-                    System.out.println(u.shipPrinted());
+                } else if (choice.equals("4")) {
+                    String boatBoard = u.toString(shipClone);
+                    System.out.println(boatBoard);
+                } else {
+                    System.out.println("Invalid input try again");
                 }
-
             }
-        } else{
-            //NEED TO FINISH 
-            while(shipSunk < 10){
-                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use powers, or enter 3 to print board");
+            System.out.println("Game over you took " + turn + " turns to sink all boats.");//this is what happens at the end of the game.
+        } else {
+            while (shipSunk < 10) {//for expert playstyle
+                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missle, or enter 4 to print board");
                 String choice = userInput.nextLine();
-                if (choice.equals("1")){
+                if (choice.equals("1")) {
                     System.out.println("Select x coordinate");
                     String xCoord = userInput.nextLine();
 
@@ -107,36 +132,58 @@ public class Turns1 {
 
                     int x = 0;
                     int y = 0;
-                    try{
+                    try {
                         x = Integer.parseInt(xCoord);
                         y = Integer.parseInt(yCoord);
-                        String effect = (this.hit(x,y));
-                        if (effect.equals("sunk")){
-
-                        }
-                    }catch (Exception NumberFormatException){
+                        System.out.println(this.hit(x, y));
+                    } catch (NumberFormatException NFE) {
                         System.out.println("Wrong input try again");
                     }
-                }
+                } else if (choice.equals("2")) {
+                    int result = this.drone();
+                    if (result != -1) {
+                        System.out.println(result + " spots with ships were found");
+                    } else {
+                        System.out.println("You have used all your drones you cannot use one at this time");
+                    }
 
+
+                } else if (choice.equals("3")) {
+                    this.missle();
+                } else if (choice.equals("4")) {
+                    String boatBoard = u.toString(shipClone);
+                    System.out.println(boatBoard);
+                } else {
+                    System.out.println("Invalid input try again");
+                }
             }
+            System.out.println("Game over you took " + turn + " turns to sink all boats.");//this is what happens at the end of the game.
         }
     }
 
-    public String hit(int x, int y) {
-        if (shipClone[y][x] == 0) {
-            turn++;
-            return "miss";
-        }
-        // if the user has already attacked a location or the location is out of bounds, it prints "penalty"
-        //Create a 2D linkedlist to keep track what positions the player has called on
-        else if (y > upperBound || x > upperBound || y < lowerBound || x < lowerBound) {
-            turn += 2;
-            return "penalty";
+    public String hit(int x, int y) {//this method is for hitting ships.
+        /* there are 3 checks
+        (1. see if the values passed in are out of bounds
+        (2. see if the coordinates hit "water" represented as 0
+        (3. if it does hit a ship, it increments a counter for each individual ship and checks to see if it is sunk
+         */
 
-        } else {
+        //check 1
+        if (y > upperBound || x > upperBound || y < lowerBound || x < lowerBound || coordinateTracker[y][x] != 0 ) {
+            turn += 2;
+            return "Penalty";
+
+         //check 2
+        }else if (shipClone[y][x] == 0) {
+                turn++;
+            coordinateTracker[y][x] = turn;
+                return "miss";
+
+         //check 3
+        }else {
             shipHit = shipClone[y][x];
             turn += 1;
+            coordinateTracker[y][x] = turn;
             if (shipHit == 1) {
                 counter1 += 1;
                 shipClone[y][x] = shipHit * -1;
@@ -221,91 +268,129 @@ public class Turns1 {
             return "hit";
         }
     }
-    public int drone(){
-        int count = 0;
-        Scanner s = new Scanner(System.in);
-        System.out.println("Would you like to scan a row or column? Type r for row, c for column");
-        String choice = s.nextLine();
-        if (!(choice.equals("r") || choice.equals("c"))){
-            System.out.print("Invalid input! Type r for row, c for column");
-            choice = s.nextLine();
-        }else if (choice.equals("c")){
-            System.out.println("Which column would you like to scan?");
-            choice = s.nextLine();
-            int numChoice;
-            while(!((numChoice = Integer.parseInt(choice)) > upperBound || lowerBound > (numChoice = Integer.parseInt(choice)))){
-                System.out.println("Invalid input try again. Please type in a number within the boundaries of the board.");
-                choice = s.nextLine();
-                numChoice = -1;
-                if((numChoice = Integer.parseInt(choice)) < upperBound || lowerBound < (numChoice = Integer.parseInt(choice))){
-                    numChoice = Integer.parseInt(choice);
-                }
-            }
-            for (int i = 0; i < shipClone.length; i++) {
-                if (shipClone[i][numChoice] != 0) {
-                    count += 1;
-                }
-            }
-            return count;
 
+    /*
+    drone is one of the powers. It scans a column and counts how many ships are in the column
+     */
+    public int drone(){
+        //if drone is at its limit then we don't want it to continue further down the code
+        if(droneCounter == droneLimit){
+            return -1;
         }else{
-            System.out.println("Which row would you like to scan?");
-            choice = s.nextLine();
-            int numChoice;
-            while(!((numChoice = Integer.parseInt(choice)) > upperBound || lowerBound > (numChoice = Integer.parseInt(choice)))){
-                System.out.println("Invalid input try again. Please type in a number within the boundaries of the board.");
+            int count = 0;
+            droneCounter += 1;//increment the drone counter for powers
+            Scanner s = new Scanner(System.in);
+
+            //these next lines take in input and convert it to an integer.
+
+            System.out.println("Would you like to scan a row or column? Type r for row, c for column");
+            String choice = s.nextLine();
+            if (!(choice.equals("r") || choice.equals("c"))){
+                System.out.print("Invalid input! Type r for row, c for column");
                 choice = s.nextLine();
-                numChoice = -1;
-                if((numChoice = Integer.parseInt(choice)) < upperBound || lowerBound < (numChoice = Integer.parseInt(choice))){
+            }else if (choice.equals("c")){
+                System.out.println("Which column would you like to scan?");
+                choice = s.nextLine();
+                int numChoice;
+                try{
                     numChoice = Integer.parseInt(choice);
+                } catch(NumberFormatException nfe) {
+                    numChoice = -1;
+
+                }
+                //If the inital convert did not work, then we use a while loop to keep asking until they give the right input.
+                while(numChoice > upperBound || lowerBound > numChoice){
+                    System.out.println("Invalid input try again. Please type in a number within the boundaries of the board.");
+                    choice = s.nextLine();
+                    try{
+                        numChoice = Integer.parseInt(choice);
+                    } catch(NumberFormatException nfe) {
+                        numChoice = -1;
+                    }
+                }
+                //this checks the column nad returns how many ships it found
+                for (int i = 0; i < shipClone.length; i++) {
+                    if (shipClone[i][numChoice] != 0) {
+                        count += 1;
+                    }
+                }
+                return count;
+
+            }else{
+                //identical to column, but looks in rows
+                System.out.println("Which row would you like to scan?");
+                choice = s.nextLine();
+                int numChoice;
+                try{
+                    numChoice = Integer.parseInt(choice);
+                } catch(NumberFormatException nfe) {
+                    numChoice = -1;
+
+                }
+                while(numChoice > upperBound || lowerBound > numChoice){
+                    System.out.println("Invalid input try again. Please type in a number within the boundaries of the board.");
+                    choice = s.nextLine();
+                    try{
+                        numChoice = Integer.parseInt(choice);
+                    } catch(NumberFormatException nfe) {
+                        numChoice = -1;
+                    }
+                }
+                for (int i = 0; i < shipClone.length; i++) {
+                    if (shipClone[numChoice][i] != 0) {
+                        count += 1;
+                    }
+                }
+                return count;
+            }
+            return -1;
+        }
+        }
+
+    //missle places a missle a missle strike on
+    public void missle() {
+    if (missileCounter != missileLimit) {
+            missileCounter += 1;
+            Scanner missinInp = new Scanner(System.in);
+            Boolean coordinates = false;
+            while (coordinates == false) {
+                System.out.println("What x coordinate would you like to strike?");
+                String xCoord = missinInp.nextLine();
+                System.out.println("What y coordinate would you like to strike?");
+                String yCoord = missinInp.nextLine();
+
+                 x = 0;
+                 y = 0;
+                try {
+                    x = Integer.parseInt(xCoord);
+                    y = Integer.parseInt(yCoord);
+                    coordinates = true;
+                } catch (Exception NumberFormatException) {
+                    System.out.println("Wrong input try again");
                 }
             }
-            for (int i = 0; i < shipClone.length; i++) {
-                if (shipClone[numChoice][i] != 0) {
-                    count += 1;
+            int[][] strikeZone = new int[3][3];
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    String outcome = this.hitForMissle(x + i, y + j);
                 }
             }
-            return count;
+            System.out.println("Missile fired!");
+        } else{
+            System.out.println("Out of missiles");
         }
-        return -1;
     }
-    public void missle(){
-        Scanner missinInp = new Scanner (System.in);
-        Boolean coordinates = false;
-        while(coordinates == false) {
-            System.out.println("What x coordinate would you like to strike?");
-            String xCoord = missinInp.nextLine();
-            System.out.println("What y coordinate would you like to strike?");
-            String yCoord = missinInp.nextLine();
-            int x = 0;
-            int y = 0;
-            try {
-                x = Integer.parseInt(xCoord);
-                y = Integer.parseInt(yCoord);
-                coordinates = true;
-            } catch (Exception NumberFormatException) {
-                System.out.println("Wrong input try again");
-            }
-        }
-        int[][] strikeZone = new int[3][3];
-        for(int i = 0; i<= 3; i ++){
-            for(int j = 0; j<= 3; j++){
-                int newValue = shipClone[i][j] * -1;
-                shipClone[i][j] = newValue;
-                String outcome = this.hitForMissle(x+i, y+1);
-            }
-        }
-        System.out.println("Missile fired!");
-    }
+    //this issues a missle attack, but checks through each individual index. This is mainly here to catch errors before they happen
+    // and we get an index out of bounds error.
     public String hitForMissle(int x, int y) {
-        if (y > upperBound || x > upperBound || y < lowerBound || x < lowerBound){
+        if (y >= upperBound || x >= upperBound || y <= lowerBound || x <= lowerBound){
             return "penalty";
         }
         // if the user has already attacked a location or the location is out of bounds, it prints "penalty"
         else if (shipClone[y][x] == 0) {
             return "miss";
 
-        } else {
+        }else {
             shipHit = shipClone[y][x];
             if (shipHit == 1) {
                 counter1 += 1;
@@ -392,6 +477,5 @@ public class Turns1 {
         }
     }
     public static void main(String[] args) {
-
     }
 }
