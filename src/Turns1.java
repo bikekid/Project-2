@@ -1,3 +1,4 @@
+//REEDX500
 import java.util.Scanner;
 public class Turns1 {
     private int[][] shipClone;
@@ -36,6 +37,8 @@ public class Turns1 {
     private int missileLimit;// how many missiles can be used based on playstyle
     private int droneCounter = 0;//same functions as above
     private int droneLimit;//same
+    private int[][] shotBoard;
+    private int shotFired = 0;
 
     //Create global private linked list
 
@@ -45,7 +48,6 @@ public class Turns1 {
     private int tracker;
 
     public Turns1(Board play, Boats u) {
-
         playStyle = play.getChoice();//gets the playstyle from board
         shipClone = u.getShipClone();//gets the ship array from boats
         if (playStyle == 1) {//for standard mode
@@ -57,6 +59,7 @@ public class Turns1 {
             missileLimit = 1;
             droneLimit = 1;
             coordinateTracker = new int[8][8];
+            shotBoard = new int[8][8];
         } else {
             ship1 = 5;
             ship2 = 5;
@@ -71,6 +74,7 @@ public class Turns1 {
             missileLimit = 2;
             droneLimit = 2;
             coordinateTracker = new int[12][12];
+            shotBoard = new int[12][12];
         }
         turn = 0;
         shipSunk = 0;
@@ -82,9 +86,10 @@ public class Turns1 {
         if (playStyle == 1) {//if standard
             while (shipSunk < 5) {
                 // while all the ships are not sunk this thread executes
-                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missle, or enter 4 to print board");
+                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missile, or enter 4 to print board");
                 String choice = userInput.nextLine();
                 if (choice.equals("1")) {
+                    System.out.println(this.toString());
                     System.out.println("Select x coordinate");
                     String xCoord = userInput.nextLine();
 
@@ -112,18 +117,20 @@ public class Turns1 {
                 } else if (choice.equals("3")) {
                     this.missle();
                 } else if (choice.equals("4")) {
-                    String boatBoard = u.toString(shipClone);
-                    System.out.println(boatBoard);
+                    String board = u.toString(shipClone);
+                    System.out.println(board);
                 } else {
                     System.out.println("Invalid input try again");
                 }
             }
-            System.out.println("Game over you took " + turn + " turns to sink all boats.");//this is what happens at the end of the game.
+            System.out.println("Game over you took " + turn + " turns to sink all boats. with " + shotFired +" shots fired" );//this is what happens at the end of the game.
         } else {
             while (shipSunk < 10) {//for expert playstyle
-                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missle, or enter 4 to print board");
+                // while all the ships are not sunk this thread executes
+                System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missile, or enter 4 to print board");
                 String choice = userInput.nextLine();
                 if (choice.equals("1")) {
+                    System.out.println(this.toString());
                     System.out.println("Select x coordinate");
                     String xCoord = userInput.nextLine();
 
@@ -151,13 +158,13 @@ public class Turns1 {
                 } else if (choice.equals("3")) {
                     this.missle();
                 } else if (choice.equals("4")) {
-                    String boatBoard = u.toString(shipClone);
-                    System.out.println(boatBoard);
+                    String board = u.toString(shipClone);
+                    System.out.println(board);
                 } else {
                     System.out.println("Invalid input try again");
                 }
             }
-            System.out.println("Game over you took " + turn + " turns to sink all boats.");//this is what happens at the end of the game.
+            System.out.println("Game over you took " + turn + " turns to sink all boats. with " + shotFired +" shots fired" );
         }
     }
 
@@ -167,17 +174,17 @@ public class Turns1 {
         (2. see if the coordinates hit "water" represented as 0
         (3. if it does hit a ship, it increments a counter for each individual ship and checks to see if it is sunk
          */
-
+        shotFired += 1;
         //check 1
         if (y > upperBound || x > upperBound || y < lowerBound || x < lowerBound || coordinateTracker[y][x] != 0 ) {
             turn += 2;
-            return "Penalty";
+            return "Penalty lose a turn";
 
          //check 2
         }else if (shipClone[y][x] == 0) {
-                turn++;
+            turn++;
             coordinateTracker[y][x] = turn;
-                return "miss";
+                return "Miss";
 
          //check 3
         }else {
@@ -188,6 +195,14 @@ public class Turns1 {
                 counter1 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter1 == ship1) {
+                    for(int i = 0; i < shipClone.length; i ++) {
+                        String row = "";
+                        for (int j = 0; j < shipClone[i].length; j++) {
+                            if (shipClone[i][j] == -1) {
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -195,7 +210,15 @@ public class Turns1 {
             } else if (shipHit == 2) {
                 counter2 += 1;
                 shipClone[y][x] = shipHit * -1;
-                if (counter2 == ship2) {
+                if (counter2 == ship2){
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -2){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -204,6 +227,14 @@ public class Turns1 {
                 counter3 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter3 == ship3) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -3){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -212,6 +243,14 @@ public class Turns1 {
                 counter4 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter4 == ship4) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -4){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -220,6 +259,14 @@ public class Turns1 {
                 counter5 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter5 == ship5) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -5){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -228,6 +275,14 @@ public class Turns1 {
                 counter6 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter6 == ship6) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -6){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -236,6 +291,14 @@ public class Turns1 {
                 counter7 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter7 == ship7) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -7){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -244,6 +307,14 @@ public class Turns1 {
                 counter8 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter8 == ship8) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -8){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -252,6 +323,14 @@ public class Turns1 {
                 counter9 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter9 == ship9) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -9){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -260,6 +339,14 @@ public class Turns1 {
                 counter10 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter10 == ship10) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -10){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -277,8 +364,10 @@ public class Turns1 {
         if(droneCounter == droneLimit){
             return -1;
         }else{
+            turn ++;
             int count = 0;
-            droneCounter += 1;//increment the drone counter for powers
+
+           //increment the drone counter for powers
             Scanner s = new Scanner(System.in);
 
             //these next lines take in input and convert it to an integer.
@@ -289,6 +378,7 @@ public class Turns1 {
                 System.out.print("Invalid input! Type r for row, c for column");
                 choice = s.nextLine();
             }else if (choice.equals("c")){
+                droneCounter += 1;
                 System.out.println("Which column would you like to scan?");
                 choice = s.nextLine();
                 int numChoice;
@@ -319,6 +409,7 @@ public class Turns1 {
             }else{
                 //identical to column, but looks in rows
                 System.out.println("Which row would you like to scan?");
+                droneCounter += 1;
                 choice = s.nextLine();
                 int numChoice;
                 try{
@@ -351,6 +442,7 @@ public class Turns1 {
     public void missle() {
     if (missileCounter != missileLimit) {
             missileCounter += 1;
+            turn ++;
             Scanner missinInp = new Scanner(System.in);
             Boolean coordinates = false;
             while (coordinates == false) {
@@ -388,14 +480,24 @@ public class Turns1 {
         }
         // if the user has already attacked a location or the location is out of bounds, it prints "penalty"
         else if (shipClone[y][x] == 0) {
+            coordinateTracker[y][x] = 22;
             return "miss";
 
         }else {
+            coordinateTracker[y][x] = 22;
             shipHit = shipClone[y][x];
             if (shipHit == 1) {
                 counter1 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter1 == ship1) {
+                    for(int i = 0; i < shipClone.length; i ++) {
+                        String row = "";
+                        for (int j = 0; j < shipClone[i].length; j++) {
+                            if (shipClone[i][j] == -1) {
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -403,7 +505,15 @@ public class Turns1 {
             } else if (shipHit == 2) {
                 counter2 += 1;
                 shipClone[y][x] = shipHit * -1;
-                if (counter2 == ship2) {
+                if (counter2 == ship2){
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -2){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -412,6 +522,14 @@ public class Turns1 {
                 counter3 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter3 == ship3) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -3){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -420,6 +538,14 @@ public class Turns1 {
                 counter4 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter4 == ship4) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -4){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -428,6 +554,14 @@ public class Turns1 {
                 counter5 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter5 == ship5) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -5){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -436,6 +570,14 @@ public class Turns1 {
                 counter6 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter6 == ship6) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -6){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -444,6 +586,14 @@ public class Turns1 {
                 counter7 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter7 == ship7) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -7){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -452,6 +602,14 @@ public class Turns1 {
                 counter8 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter8 == ship8) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -8){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -460,6 +618,14 @@ public class Turns1 {
                 counter9 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter9 == ship9) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -9){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -468,6 +634,14 @@ public class Turns1 {
                 counter10 += 1;
                 shipClone[y][x] = shipHit * -1;
                 if (counter10 == ship10) {
+                    for(int i = 0; i < shipClone.length; i ++){
+                        String row = "";
+                        for(int j = 0; j< shipClone[i].length; j++) {
+                            if(shipClone[i][j] == -10){
+                                shipClone[i][j] = -666;
+                            }
+                        }
+                    }
                     shipSunk += 1;
                     return "sunk";
                 }
@@ -475,6 +649,26 @@ public class Turns1 {
             }
             return "hit";
         }
+    }
+        public String toString(){
+        String column = "";
+        for(int i = 0; i < shipClone.length; i ++){
+            String row = "";
+            for(int j = 0; j< shipClone[i].length; j++) {
+                if (shipClone[i][j] == -666){
+                    row+= "[S]";
+                }else if(shipClone[i][j] < 0){
+                row+= "[X]";
+
+                }else if(coordinateTracker[i][j] != 0) {
+                    row += "[O]";
+                }else{
+                    row += "[-]";
+                }
+            }
+            column += row + "\n";
+        }
+        return column;
     }
     public static void main(String[] args) {
     }

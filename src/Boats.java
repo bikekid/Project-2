@@ -1,4 +1,4 @@
-
+//REEDX500
 public class Boats {
 
     private int[][] shipArr;//ship array
@@ -21,8 +21,7 @@ public class Boats {
         lowerBound = 0;
         playstyle = b.getChoice();
         shipClone = this.shipsGenerated();
-        String boardToString = this.toString(shipClone);// will not need these 2 lines for testing.
-        System.out.print(boardToString);// for testing
+
     }
     // generates a board populated with numbers representing ships
     // this is all inverted because it is easier within the turns class.
