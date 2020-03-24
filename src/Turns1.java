@@ -86,6 +86,7 @@ public class Turns1 {
         if (playStyle == 1) {//if standard
             while (shipSunk < 5) {
                 // while all the ships are not sunk this thread executes
+
                 System.out.println("Hello what would you like to do? Enter 1 to hit a ship, enter 2 to use drone, enter 3 to use missile, or enter 4 to print board");
                 String choice = userInput.nextLine();
                 if (choice.equals("1")) {
@@ -106,6 +107,7 @@ public class Turns1 {
                         System.out.println("Wrong input try again");
                     }
                 } else if (choice.equals("2")) {
+                    System.out.println(this.toString());
                     int result = this.drone();
                     if (result != -1) {
                         System.out.println(result + " spots with ships were found");
@@ -115,6 +117,7 @@ public class Turns1 {
 
 
                 } else if (choice.equals("3")) {
+                    System.out.println(this.toString());
                     this.missle();
                 } else if (choice.equals("4")) {
                     String board = u.toString(shipClone);
@@ -147,6 +150,7 @@ public class Turns1 {
                         System.out.println("Wrong input try again");
                     }
                 } else if (choice.equals("2")) {
+                    System.out.println(this.toString());
                     int result = this.drone();
                     if (result != -1) {
                         System.out.println(result + " spots with ships were found");
@@ -156,8 +160,10 @@ public class Turns1 {
 
 
                 } else if (choice.equals("3")) {
+                    System.out.println(this.toString());
                     this.missle();
                 } else if (choice.equals("4")) {
+                    System.out.println(this.toString());
                     String board = u.toString(shipClone);
                     System.out.println(board);
                 } else {
