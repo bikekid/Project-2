@@ -1,5 +1,7 @@
+//REEDX500 JOHAL004
 public class BattleBoard {
     public BattleBoard(){
+        //creates a root which plays the game.
         Root a = new Root();
     }
 

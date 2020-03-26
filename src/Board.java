@@ -1,4 +1,4 @@
-//REEDX500
+//REEDX500 JOHAL004
 import java.util.Scanner;
 
 //Board class to create an instance of a game board
@@ -38,10 +38,12 @@ public class Board {
             spaces = new int[12][12];
         }
     }
+    //returns the board
     public static int[][] getBoard()
     {
         return spaces;
     }
+    //returns what playstyle the player ultimately determined.
     public static int getChoice(){
         return playerInput;
     }

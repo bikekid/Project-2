@@ -1,4 +1,4 @@
-//REEDX500
+//REEDX500 JOHAL004
 public class Boats {
 
     private int[][] shipArr;//ship array
