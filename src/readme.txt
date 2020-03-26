@@ -20,8 +20,11 @@ Turns1: Ethan and Taranvir
 Root: Ethan
 BattleBoard: Ethan
 
-There are no special features besides (being able to quit early)
-or bugs (that we are aware of). 
+There are no special features besides (being able to force quit early. 
+Our code assumes you finished the game,
+but we thought it would be easier for you guys to get out of the game).
+
+no bugs that we are aware of. 
 
 To run our code:
 
